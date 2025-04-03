@@ -32,24 +32,32 @@ function App() {
   }
 
   const handleSearch = async () => {
-
     if (!city) return
 
     try {
-      const { lat, lon, name, country } = await fetchCoordinates(city)
-      const data = await fetchWeatherByCoords(lat, lon)
+      const coordsList = await fetchCoordinates(city)
+      console.log('📍 응답:', coordsList)
 
-      console.log(`🌍 ${name}, ${country} 좌표 →`, lat, lon)
-      console.log("🌤️ 날씨 데이터 →", data)
+      if (!coordsList || coordsList.length === 0) {
+        alert('도시를 찾을 수 없어요')
+        return
+      }
+
+      const { lat, lon, name, country } = coordsList[0]
+      console.log(`${name}, ${country} →`, lat, lon)
+
+      const data = await fetchWeatherByCoords(lat, lon)
+      console.log('🌤️ 날씨 데이터:', data)
 
       setWeather(data)
-      setCity('')
-
     } catch (err) {
-      console.error(err)
-      alert('도시를 찾을 수 없어요')
+      console.error('❌ 에러:', err)
+      alert('도시를 찾을 수 없습니다.')
+    } finally {
+      setCity('')
     }
   }
+
 
 
 
